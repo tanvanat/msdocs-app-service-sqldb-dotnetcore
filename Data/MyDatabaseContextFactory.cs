@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.Configuration;
 
 namespace DotNetCoreSqlDb.Data
 {
@@ -8,14 +9,17 @@ namespace DotNetCoreSqlDb.Data
     {
         public MyDatabaseContext CreateDbContext(string[] args)
         {
+            var configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .Build();
+
+            var connectionString =
+                configuration.GetConnectionString("MyDbConnection");
+
             var optionsBuilder =
                 new DbContextOptionsBuilder<MyDatabaseContext>();
 
-            var connectionString =
-                Environment.GetEnvironmentVariable(
-                    "SQLAZURECONNSTR_AZURE_SQL_CONNECTIONSTRING");
-
-            optionsBuilder.UseSqlServer(connectionString);
+            optionsBuilder.UseNpgsql(connectionString);
 
             return new MyDatabaseContext(optionsBuilder.Options);
         }

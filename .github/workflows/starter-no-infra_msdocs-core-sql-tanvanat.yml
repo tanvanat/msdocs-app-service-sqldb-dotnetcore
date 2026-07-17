@@ -36,6 +36,9 @@ jobs:
       - name: Add .NET tools to PATH
         run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
 
+      - name: Restore dependencies
+        run: dotnet restore
+
       - name: Create migration bundle
         run: dotnet ef migrations bundle --runtime linux-x64 -o ${{ env.DOTNET_ROOT }}/myapp/migrationsbundle
 
