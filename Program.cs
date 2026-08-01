@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using DotNetCoreSqlDb.Data;
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +27,22 @@ builder.Services.AddControllersWithViews();
 // Add App Service logging
 builder.Logging.AddAzureWebAppDiagnostics();
 
+builder.Services.AddSwaggerGen(options =>
+{
+    options.EnableAnnotations();
+
+    var websiteHostname =
+        Environment.GetEnvironmentVariable("WEBSITE_HOSTNAME");
+
+    if (!string.IsNullOrEmpty(websiteHostname))
+    {
+        options.AddServer(
+            new Microsoft.OpenApi.Models.OpenApiServer
+            {
+                Url = $"https://{websiteHostname}"
+            });
+    }
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -48,4 +64,7 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Todos}/{action=Index}/{id?}");
 
+app.UseSwagger();
+app.UseSwaggerUI();
 app.Run();
+
